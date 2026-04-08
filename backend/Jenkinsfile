@@ -7,13 +7,13 @@ pipeline {
             steps {
                 git branch: 'main',
                     credentialsId: 'pat-creds',
-                    url: ''
+                    url: 'https://github.com/peakyblinder0509/instagram-mern.git'
             }
         }
 
         stage('Clean Old Build') {
-         steps {
-                        dir('back-end-redbus'){
+         steps {https://github.com/peakyblinder0509/instagram-mern
+                        dir('instagram-mern-backend'){
 
                 sh '''
                 docker system prune -f || true
@@ -24,34 +24,34 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                                      dir('back-end-redbus'){
+                                      dir('instagram-mern-backend'){
 
                 sh '''
-                docker build --no-cache -t redbus-backend-app:latest .
+                docker build --no-cache -t instagram-mern-backend-app:latest .
                 '''
             }
         }
         }
         stage('Stop Old Container') {
             steps {
-                                      dir('back-end-redbus'){
+                                      dir('instagram-mern-backend'){
 
                 sh '''
-                docker stop redbus-backend || true
-                docker rm redbus-backend || true
+                docker stop instagram-mern-backend || true
+                docker rm instagram-mern-backend || true
                 '''
             }
         }
         }
         stage('Run New Container') {
             steps {
-                                      dir('back-end-redbus'){
+                                      dir('instagram-mern-backend'){
 
                 sh '''
                 docker run -d \
                 -p 3000:3000 \
-                --name redbus-backend \
-                redbus-backend-app:latest
+                --name instagram-mern-backend \
+                instagram-mern-backend-app:latest
                 '''
             }
         }
@@ -59,7 +59,7 @@ pipeline {
         stage('Check Container Logs') {
             steps {
                 sh '''
-                docker logs redbus-backend --tail=50
+                docker logs instagram-mern-backend --tail=50
                 '''
             }
         }
