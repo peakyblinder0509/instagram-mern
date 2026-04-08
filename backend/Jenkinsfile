@@ -1,1 +1,76 @@
+pipeline {
+    agent any
 
+    stages {
+
+        stage('Clone Backend Code') {
+            steps {
+                git branch: 'main',
+                    credentialsId: 'pat-creds',
+                    url: ''
+            }
+        }
+
+        stage('Clean Old Build') {
+         steps {
+                        dir('back-end-redbus'){
+
+                sh '''
+                docker system prune -f || true
+                '''
+            }
+        }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                                      dir('back-end-redbus'){
+
+                sh '''
+                docker build --no-cache -t redbus-backend-app:latest .
+                '''
+            }
+        }
+        }
+        stage('Stop Old Container') {
+            steps {
+                                      dir('back-end-redbus'){
+
+                sh '''
+                docker stop redbus-backend || true
+                docker rm redbus-backend || true
+                '''
+            }
+        }
+        }
+        stage('Run New Container') {
+            steps {
+                                      dir('back-end-redbus'){
+
+                sh '''
+                docker run -d \
+                -p 3000:3000 \
+                --name redbus-backend \
+                redbus-backend-app:latest
+                '''
+            }
+        }
+        }
+        stage('Check Container Logs') {
+            steps {
+                sh '''
+                docker logs redbus-backend --tail=50
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "✅ Deployment Success 🚀"
+        }
+        failure {
+            echo "❌ Build Failed  😢"
+        }
+    }
+}
