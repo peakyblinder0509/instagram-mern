@@ -7,7 +7,7 @@ pipeline {
         stage('Clone Backend Code') {
             steps {
                 git branch: 'main',
-                    credentialsId: 'pat-creds',
+                    credentialsId: 'git-cred',
                     url: 'https://github.com/peakyblinder0509/instagram-mern.git'
             }
         }
